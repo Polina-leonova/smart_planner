@@ -1,0 +1,251 @@
+{% extends "base.html" %}
+
+{% block content %}
+<!-- Google Fonts -->
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<!-- Animate.css -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css"/>
+
+<style>
+    :root {
+        --primary: #6366f1;
+        --secondary: #a855f7;
+        --dark-bg: #0f172a;
+        --glass-border: rgba(255, 255, 255, 0.1);
+        --text-main: #f8fafc;
+    }
+
+    body {
+        font-family: 'Plus Jakarta Sans', sans-serif;
+        background-color: var(--dark-bg);
+        color: var(--text-main);
+        min-height: 100vh;
+        margin: 0;
+    }
+
+    .bg-blobs {
+        position: fixed;
+        top: 0; left: 0; width: 100%; height: 100%;
+        z-index: -1;
+        background: radial-gradient(circle at 50% 50%, #1e1b4b 0%, #0f172a 100%);
+        overflow: hidden;
+    }
+
+    .blob {
+        position: absolute;
+        width: 500px; height: 500px;
+        background: linear-gradient(135deg, var(--primary), var(--secondary));
+        filter: blur(80px);
+        border-radius: 50%;
+        opacity: 0.15;
+        animation: float 20s infinite alternate;
+    }
+
+    @keyframes float {
+        0% { transform: translate(0, 0); }
+        100% { transform: translate(100px, 50px); }
+    }
+
+    .glass-card {
+        background: rgba(30, 41, 59, 0.7);
+        backdrop-filter: blur(20px);
+        border: 1px solid var(--glass-border);
+        border-radius: 28px;
+        padding: 2rem;
+    }
+
+    .ai-hero {
+        background: linear-gradient(135deg, rgba(99, 102, 241, 0.1) 0%, rgba(168, 85, 247, 0.1) 100%);
+        border: 1px solid var(--glass-border);
+        border-radius: 35px;
+        padding: 2.5rem 3rem;
+        margin-bottom: 2rem;
+    }
+
+    .btn-modern {
+        background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+        color: white; border: none; padding: 12px 24px; border-radius: 14px;
+        font-weight: 700; text-decoration: none; transition: 0.3s;
+    }
+    .btn-modern:hover { transform: scale(1.05); color: white; opacity: 0.9; }
+
+    .progress-container {
+        background: rgba(0,0,0,0.3); height: 14px; border-radius: 10px; overflow: hidden;
+    }
+    .progress-fill {
+        height: 100%; background: linear-gradient(90deg, #6366f1, #a855f7); width: 0%;
+        transition: width 1s ease;
+    }
+
+    .quick-note-box {
+        background: rgba(15, 23, 42, 0.4); border: 1px solid var(--glass-border);
+        border-radius: 18px; color: white; padding: 1rem; width: 100%; outline: none;
+        resize: none;
+    }
+
+    .ai-brand {
+        background: linear-gradient(90deg, #818cf8, #c084fc);
+        background-clip: text;
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        color: transparent;
+        display: inline-block;
+        font-weight: 800;
+    }
+</style>
+
+<div class="bg-blobs">
+    <div class="blob" style="top: 10%; left: -5%;"></div>
+    <div class="blob" style="bottom: 10%; right: -5%;"></div>
+</div>
+
+<div class="container py-5">
+    <!-- Шапка с динамической статистикой -->
+    <div class="ai-hero animate__animated animate__fadeInDown shadow-lg">
+        <h1 class="display-5 fw-800">Привет! Я твой <span class="ai-brand">ИИ-помощник</span></h1>
+        <p class="lead opacity-75 mb-0">
+            {% if all_tasks %}
+                Выполнено {{ all_tasks|selectattr('status', 'equalto', 'done')|list|length }} из {{ all_tasks|length }} задач за сегодня
+            {% else %}
+                Твой день чист. Самое время поставить первую цель!
+            {% endif %}
+        </p>
+    </div>
+
+    <!-- Основной контент -->
+    <div class="row g-4 d-flex align-items-stretch">
+        
+        <!-- ЛЕВАЯ ЧАСТЬ: Главный фокус -->
+        <div class="col-lg-8">
+            <div class="glass-card h-100 d-flex flex-column shadow-lg">
+                <div class="d-flex justify-content-between align-items-center mb-5">
+                    <h3 class="fw-bold m-0">Главный фокус</h3>
+                    <button class="btn btn-modern shadow" data-bs-toggle="modal" data-bs-target="#addTaskModal">+ Новая задача</button>
+                </div>
+
+                <div class="flex-grow-1 d-flex flex-column justify-content-center">
+                    {% if tasks and tasks|length > 0 %}
+                        {% set t = tasks[0] %}
+                        <div class="p-5 rounded-4 animate__animated animate__fadeIn" style="background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.05);">
+                            <div class="d-flex justify-content-between align-items-center mb-4">
+                                <span class="badge {% if t.status == 'doing' %}bg-info text-dark{% else %}bg-primary{% endif %} px-4 py-2 rounded-pill" style="letter-spacing: 1px;">
+                                    {% if t.status == 'doing' %} В ПРОЦЕССЕ{% else %}{{ t.priority|upper }} PRIORITY{% endif %}
+                                </span>
+                                <span class="fs-4 opacity-50 fw-bold"> {{ t.time_est }} ч.</span>
+                            </div>
+                            <h1 class="display-3 fw-800 mb-5">{{ t.title }}</h1>
+                            <div class="d-flex gap-3">
+                                {% if t.status != 'doing' %}
+                                <a href="/move/{{ t.id }}/doing" class="btn btn-modern px-5 py-3 fs-5">В работу</a>
+                                {% else %}
+                                <a href="/move/{{ t.id }}/done" class="btn btn-modern px-5 py-3 fs-5" style="background: linear-gradient(135deg, #22c55e, #10b981);">Завершить</a>
+                                {% endif %}
+                                <a href="/delete/{{ t.id }}" class="btn btn-outline-light rounded-4 px-4 opacity-50">Удалить</a>
+                            </div>
+                        </div>
+                    {% else %}
+                        <div class="text-center py-5 opacity-50">
+                            <div class="display-1 mb-4"></div>
+                            <h4>Все главные цели достигнуты!</h4>
+                            <p>Ты отлично поработал. Проверь Канбан или добавь новую задачу.</p>
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+
+        <!-- ПРАВАЯ ЧАСТЬ: Нагрузка и Заметка -->
+        <div class="col-lg-4 d-flex flex-column gap-4">
+            
+            <!-- Карточка Нагрузки -->
+            <div class="glass-card flex-grow-1 d-flex flex-column justify-content-center shadow-lg">
+                <h5 class="fw-bold mb-4">Текущая нагрузка</h5>
+                <div class="progress-container mb-3">
+                    <div id="capacity-bar" class="progress-fill"></div>
+                </div>
+                <div class="d-flex justify-content-between">
+                    <small id="capacity-text" class="opacity-50 text-uppercase fw-bold" style="font-size: 0.65rem;">Расчет...</small>
+                    <small class="opacity-50 fw-bold" style="font-size: 0.65rem;">LIMIT: 10H</small>
+                </div>
+            </div>
+
+            <!-- Карточка Заметки -->
+            <div class="glass-card flex-grow-1 d-flex flex-column shadow-lg">
+                <h5 class="fw-bold mb-3 text-info">Быстрая заметка</h5>
+                <textarea id="quickNote" class="quick-note-box flex-grow-1" placeholder="Запиши что-нибудь важное..."></textarea>
+                <div class="mt-2 text-end">
+                    <small class="opacity-25 fw-bold" style="font-size: 0.6rem;">АВТОСОХРАНЕНИЕ</small>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+<!-- Модалка -->
+<div class="modal fade" id="addTaskModal" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content p-4" style="background: #1e293b; color: white; border-radius: 28px; border: 1px solid var(--glass-border);">
+            <div class="modal-header border-0 pb-0">
+                <h4 class="fw-bold m-0">Добавить задачу</h4>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body pt-4">
+                <form action="/add_task" method="POST">
+                    <div class="mb-4">
+                        <label class="small fw-bold opacity-50 mb-2 text-uppercase">Название</label>
+                        <input type="text" name="title" class="form-control bg-dark border-0 text-white p-3 rounded-3" placeholder="Напр: Сдать курсовую" required>
+                    </div>
+                    <div class="row mb-4">
+                        <div class="col-6">
+                            <label class="small fw-bold opacity-50 mb-2 text-uppercase">Категория</label>
+                            <select name="category" class="form-select bg-dark border-0 text-white p-3 rounded-3">
+                                <option value="Work">Работа</option>
+                                <option value="Education">Учеба</option>
+                                <option value="Personal">Личное</option>
+                            </select>
+                        </div>
+                        <div class="col-6">
+                            <label class="small fw-bold opacity-50 mb-2 text-uppercase">Время (ч)</label>
+                            <input type="number" step="0.5" name="time_est" class="form-control bg-dark border-0 text-white p-3 rounded-3" placeholder="ИИ">
+                        </div>
+                    </div>
+                    <div class="mb-4">
+                        <label class="small fw-bold opacity-50 mb-2 text-uppercase">Приоритет</label>
+                        <select name="priority" class="form-select bg-dark border-0 text-white p-3 rounded-3">
+                            <option value="Auto">Довериться ИИ</option>
+                            <option value="High">High</option>
+                            <option value="Medium">Medium</option>
+                            <option value="Low">Low</option>
+                        </select>
+                    </div>
+                    <button type="submit" class="btn btn-modern w-100 py-3 mt-2 shadow">Сохранить</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', () => {
+        // Расчет нагрузки: Берем сумму времени только НЕВЫПОЛНЕННЫХ задач (список tasks)
+        const totalTime = parseFloat("{{ tasks|sum(attribute='time_est') if tasks else 0 }}");
+        const limit = 10;
+        const progress = Math.min((totalTime / limit) * 100, 100);
+        
+        const bar = document.getElementById('capacity-bar');
+        setTimeout(() => {
+            bar.style.width = progress + '%';
+        }, 100);
+        
+        document.getElementById('capacity-text').innerText = `Осталось работы: ${totalTime} ч.`;
+
+        // Работа с заметкой
+        const note = document.getElementById('quickNote');
+        note.value = localStorage.getItem('user_note') || '';
+        note.addEventListener('input', () => {
+            localStorage.setItem('user_note', note.value);
+        });
+    });
+</script>
+{% endblock %}

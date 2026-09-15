@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Вход | AI Planner</title>
+    
+    <!-- Библиотеки -->
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;800&display=swap" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css"/>
+
+    <style>
+        :root {
+            --primary: #6366f1;
+            --secondary: #a855f7;
+            --dark-bg: #0f172a;
+            --glass-border: rgba(255, 255, 255, 0.1);
+        }
+
+        body {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            background-color: var(--dark-bg);
+            color: #f8fafc;
+            height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0;
+            overflow: hidden;
+        }
+
+        /* Анимированные пятна на фоне */
+        .bg-blobs {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: -1;
+            background: radial-gradient(circle at 50% 50%, #1e1b4b 0%, #0f172a 100%);
+        }
+        .blob {
+            position: absolute; width: 500px; height: 500px;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            filter: blur(80px); border-radius: 50%; opacity: 0.15;
+            animation: float 20s infinite alternate;
+        }
+
+        @keyframes float {
+            0% { transform: translate(0, 0) scale(1); }
+            100% { transform: translate(100px, 50px) scale(1.1); }
+        }
+
+        /* Стеклянная карточка логина */
+        .login-card {
+            background: rgba(30, 41, 59, 0.7);
+            backdrop-filter: blur(20px);
+            border: 1px solid var(--glass-border);
+            border-radius: 35px;
+            padding: 3.5rem;
+            width: 100%;
+            max-width: 450px;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+        }
+
+        .brand-glow {
+            color: #c084fc;
+            text-shadow: 0 0 15px rgba(192, 132, 252, 0.5);
+            font-weight: 800;
+            font-size: 1.8rem;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            margin-bottom: 0.5rem;
+        }
+
+        .form-control {
+            background: rgba(15, 23, 42, 0.6) !important;
+            border: 1px solid var(--glass-border) !important;
+            color: white !important;
+            padding: 12px 20px;
+            border-radius: 15px;
+            transition: 0.3s;
+        }
+
+        .form-control:focus {
+            border-color: var(--primary) !important;
+            box-shadow: 0 0 15px rgba(99, 102, 241, 0.2);
+            outline: none;
+        }
+
+        .btn-login {
+            background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+            border: none;
+            color: white;
+            padding: 14px;
+            border-radius: 15px;
+            font-weight: 700;
+            width: 100%;
+            margin-top: 1rem;
+            transition: 0.3s;
+        }
+
+        .btn-login:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(99, 102, 241, 0.4);
+            opacity: 0.9;
+        }
+
+        .input-group-text {
+            background: rgba(15, 23, 42, 0.6);
+            border: 1px solid var(--glass-border);
+            color: rgba(255,255,255,0.4);
+            border-radius: 15px 0 0 15px;
+        }
+
+        .form-control {
+            border-radius: 0 15px 15px 0;
+        }
+
+        .footer-links {
+            font-size: 0.85rem;
+            opacity: 0.5;
+            transition: 0.3s;
+        }
+        .footer-links:hover { opacity: 1; color: var(--primary); text-decoration: none; }
+    </style>
+</head>
+<body>
+
+    <div class="bg-blobs">
+        <div class="blob" style="top: -10%; left: -10%;"></div>
+        <div class="blob" style="bottom: -10%; right: -10%;"></div>
+    </div>
+
+    <div class="login-card animate__animated animate__zoomIn">
+        <div class="text-center mb-5">
+            <div class="brand-glow mb-2">
+                <i class="bi bi-cpu-fill"></i> AI PLANNER
+            </div>
+            <p class="opacity-50 small text-uppercase fw-bold">Авторизация в системе</p>
+        </div>
+
+        <form action="/login" method="POST">
+            <div class="mb-4">
+                <label class="small fw-bold opacity-50 mb-2 text-uppercase">Логин или Email</label>
+                <div class="input-group">
+                    <span class="input-group-text"><i class="bi bi-person-fill"></i></span>
+                    <input type="text" name="username" class="form-control" placeholder="Введите логин" required>
+                </div>
+            </div>
+
+            <div class="mb-4">
+                <label class="small fw-bold opacity-50 mb-2 text-uppercase">Пароль</label>
+                <div class="input-group">
+                    <span class="input-group-text"><i class="bi bi-lock-fill"></i></span>
+                    <input type="password" name="password" class="form-control" placeholder="••••••••" required>
+                </div>
+            </div>
+
+            <button type="submit" class="btn btn-login mb-4 shadow">
+                ВОЙТИ В СИСТЕМУ
+            </button>
+
+            <div class="text-center mt-3">
+                <a href="#" class="footer-links d-block mb-2">Забыли пароль?</a>
+                <span class="footer-links">Нет аккаунта? <a href="/register" class="text-primary text-decoration-none">Зарегистрироваться</a></span>
+            </div>
+        </form>
+    </div>
+
+</body>
+</html>

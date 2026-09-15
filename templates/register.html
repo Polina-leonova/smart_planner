@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <title>Регистрация | AI Planner</title>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;800&display=swap" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    <style>
+        :root { --primary: #6366f1; --secondary: #a855f7; --dark-bg: #0f172a; --glass-border: rgba(255, 255, 255, 0.1); }
+        body { font-family: 'Plus Jakarta Sans', sans-serif; background-color: var(--dark-bg); color: #f8fafc; height: 100vh; display: flex; align-items: center; justify-content: center; margin: 0; overflow: hidden; }
+        .bg-blobs { position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: -1; background: radial-gradient(circle at 50% 50%, #1e1b4b 0%, #0f172a 100%); }
+        .blob { position: absolute; width: 500px; height: 500px; background: linear-gradient(135deg, var(--primary), var(--secondary)); filter: blur(80px); border-radius: 50%; opacity: 0.15; animation: float 20s infinite alternate; }
+        @keyframes float { 0% { transform: translate(0, 0); } 100% { transform: translate(100px, 50px); } }
+        .login-card { background: rgba(30, 41, 59, 0.7); backdrop-filter: blur(20px); border: 1px solid var(--glass-border); border-radius: 35px; padding: 3rem; width: 100%; max-width: 450px; }
+        .brand-glow { color: #c084fc; text-shadow: 0 0 15px rgba(192, 132, 252, 0.5); font-weight: 800; font-size: 1.8rem; text-transform: uppercase; text-align: center; margin-bottom: 2rem; }
+        .form-control { background: rgba(15, 23, 42, 0.6) !important; border: 1px solid var(--glass-border) !important; color: white !important; border-radius: 15px; padding: 12px; }
+        .btn-login { background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%); border: none; color: white; padding: 14px; border-radius: 15px; font-weight: 700; width: 100%; transition: 0.3s; }
+        .btn-login:hover { transform: translateY(-2px); box-shadow: 0 10px 20px rgba(99, 102, 241, 0.4); }
+    </style>
+</head>
+<body>
+    <div class="bg-blobs"><div class="blob"></div></div>
+    <div class="login-card">
+        <div class="brand-glow"><i class="bi bi-cpu-fill"></i> AI PLANNER</div>
+        <h5 class="text-center opacity-50 mb-4">СОЗДАТЬ АККАУНТ</h5>
+        <form action="/register" method="POST">
+            <div class="mb-3">
+                <label class="small fw-bold opacity-50 mb-2">ЛОГИН</label>
+                <input type="text" name="username" class="form-control" required>
+            </div>
+            <div class="mb-4">
+                <label class="small fw-bold opacity-50 mb-2">ПАРОЛЬ</label>
+                <input type="password" name="password" class="form-control" required>
+            </div>
+            <button type="submit" class="btn btn-login mb-3">ЗАРЕГИСТРИРОВАТЬСЯ</button>
+            <div class="text-center">
+                <a href="/login" style="color: var(--primary); text-decoration: none; font-size: 0.9rem;">Уже есть аккаунт? Войти</a>
+            </div>
+        </form>
+    </div>
+</body>
+</html>

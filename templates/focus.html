@@ -1,0 +1,275 @@
+{% extends "base.html" %}
+
+{% block content %}
+<!-- Google Fonts & Libraries -->
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css"/>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+
+<style>
+    :root {
+        --primary: #6366f1;
+        --secondary: #a855f7;
+        --dark-bg: #0f172a;
+        --glass-border: rgba(255, 255, 255, 0.1);
+    }
+
+    body {
+        font-family: 'Plus Jakarta Sans', sans-serif;
+        background-color: var(--dark-bg);
+        color: #f8fafc;
+        min-height: 100vh;
+        margin: 0;
+    }
+
+    .bg-blobs {
+        position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: -1;
+        background: radial-gradient(circle at 50% 50%, #1e1b4b 0%, #0f172a 100%);
+        overflow: hidden;
+    }
+
+    .blob {
+        position: absolute; width: 600px; height: 600px;
+        background: linear-gradient(135deg, var(--primary), var(--secondary));
+        filter: blur(100px); border-radius: 50%; opacity: 0.1;
+        animation: float 25s infinite alternate;
+    }
+
+    @keyframes float {
+        0% { transform: translate(0, 0) scale(1); }
+        100% { transform: translate(50px, 50px) scale(1.1); }
+    }
+
+    .glass-card {
+        background: rgba(30, 41, 59, 0.6);
+        backdrop-filter: blur(20px);
+        border: 1px solid var(--glass-border);
+        border-radius: 35px;
+        padding: 3rem;
+    }
+
+    .brand-glow {
+        color: #c084fc;
+        text-shadow: 0 0 15px rgba(192, 132, 252, 0.5);
+        font-weight: 800;
+        text-transform: uppercase;
+        letter-spacing: 2px;
+    }
+
+    /* Стили таймера */
+    .timer-display {
+        font-size: 8rem;
+        font-weight: 800;
+        letter-spacing: -5px;
+        color: white;
+        text-shadow: 0 0 30px rgba(99, 102, 241, 0.5);
+        margin: 1rem 0;
+    }
+
+    .btn-modern {
+        background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+        color: white; border: none; padding: 16px 40px; border-radius: 18px;
+        font-weight: 700; transition: 0.3s;
+    }
+    .btn-modern:hover { transform: scale(1.05); box-shadow: 0 10px 30px rgba(99, 102, 241, 0.4); }
+
+    .btn-outline-glass {
+        background: rgba(255,255,255,0.05);
+        border: 1px solid var(--glass-border);
+        color: white;
+        border-radius: 15px;
+        transition: 0.3s;
+    }
+    .btn-outline-glass:hover, .btn-outline-glass.active {
+        background: var(--primary);
+        border-color: var(--primary);
+    }
+
+    /* Стилизация Select */
+    .glass-select {
+        background: rgba(15, 23, 42, 0.6);
+        border: 1px solid var(--glass-border);
+        color: white;
+        border-radius: 15px;
+        padding: 12px;
+    }
+    .glass-select option { background: var(--dark-bg); }
+
+    /* Кнопки звуков */
+    .sound-btn {
+        background: rgba(255,255,255,0.03);
+        border: 1px solid var(--glass-border);
+        color: rgba(255,255,255,0.6);
+        border-radius: 15px;
+        padding: 15px;
+        transition: 0.3s;
+    }
+    .sound-btn:hover, .sound-btn.active {
+        background: rgba(99, 102, 241, 0.2);
+        color: white;
+        border-color: var(--primary);
+    }
+</style>
+
+<div class="bg-blobs">
+    <div class="blob" style="top: 10%; left: 10%;"></div>
+    <div class="blob" style="bottom: 10%; right: 10%;"></div>
+</div>
+
+<div class="container py-5 text-center">
+    <div class="animate__animated animate__fadeIn">
+        <h2 class="brand-glow mb-2">Фокус-режим</h2>
+        <p class="opacity-50 mb-5">Убери лишнее, оставь главное</p>
+
+        <div class="row justify-content-center">
+            <div class="col-lg-8">
+                
+                <!-- ОСНОВНАЯ КАРТОЧКА ТАЙМЕРА -->
+                <div class="glass-card mb-4 animate__animated animate__zoomIn">
+                    
+                    <!-- Выбор задачи -->
+                    <div class="mb-5 px-md-5">
+                        <label class="small fw-bold opacity-50 mb-2 text-uppercase d-block">Текущий проект</label>
+                        <select id="task-select" class="form-select glass-select text-center" onchange="updateTaskDisplay()">
+                            <option value="">-- Выберите задачу для концентрации --</option>
+                            {% for task in tasks %}
+                            <option value="{{ task.title }}">{{ task.title }}</option>
+                            {% endfor %}
+                        </select>
+                        <!-- Убрали text-capitalize, чтобы соответствовать дашборду -->
+                        <h4 id="display-task-name" class="mt-4 fw-bold text-primary animate__animated animate__pulse animate__infinite"></h4>
+                    </div>
+
+                    <!-- Таймер -->
+                    <div class="timer-display" id="timer-display">25:00</div>
+                    
+                    <!-- Кнопки управления -->
+                    <div class="d-flex justify-content-center gap-3 mt-4 mb-5">
+                        <button class="btn btn-modern px-5 py-3 fs-5 shadow" id="start-btn" onclick="toggleTimer()">СТАРТ</button>
+                        <button class="btn btn-outline-glass px-4" onclick="resetTimer()">
+                            <i class="fas fa-undo"></i>
+                        </button>
+                    </div>
+
+                    <!-- Переключатели режимов -->
+                    <div class="d-flex justify-content-center gap-2">
+                        <button class="btn btn-outline-glass px-4 py-2 active" id="mode-work" onclick="setMode('work')">Работа</button>
+                        <button class="btn btn-outline-glass px-4 py-2" id="mode-break" onclick="setMode('break')">Отдых</button>
+                    </div>
+                </div>
+
+                <!-- ЗВУКОВАЯ АТМОСФЕРА (Изменено на 3 колонки) -->
+                <div class="glass-card p-4 animate__animated animate__fadeInUp">
+                    <h6 class="fw-bold opacity-50 text-uppercase small mb-4">Аудио-фон для глубокого фокуса</h6>
+                    
+                    <div class="row g-3 justify-content-center">
+                        <div class="col-6 col-md-4">
+                            <button class="sound-btn w-100" onclick="playAmbient('rain', this)">
+                                <i class="fas fa-cloud-showers-heavy d-block mb-2 fs-4"></i> Дождь
+                            </button>
+                        </div>
+                        <div class="col-6 col-md-4">
+                            <button class="sound-btn w-100" onclick="playAmbient('cafe', this)">
+                                <i class="fas fa-mug-hot d-block mb-2 fs-4"></i> Кафе
+                            </button>
+                        </div>
+                        <div class="col-12 col-md-4">
+                            <button class="btn btn-outline-danger w-100 h-100 border-opacity-25 rounded-4 fw-bold" onclick="stopAmbient()">
+                                <i class="fas fa-volume-mute d-block mb-2 fs-4"></i> Выкл
+                            </button>
+                        </div>
+                    </div>
+
+                    <audio id="bg-audio" loop></audio>
+                </div>
+
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    let timer;
+    let timeLeft = 25 * 60;
+    let isRunning = false;
+    let currentMode = 'work';
+
+    const display = document.getElementById('timer-display');
+    const startBtn = document.getElementById('start-btn');
+    const bgAudio = document.getElementById('bg-audio');
+    const taskNameDisplay = document.getElementById('display-task-name');
+
+    const sounds = {
+        'rain': 'https://actions.google.com/sounds/v1/weather/rain_on_roof.ogg',
+        'cafe': 'https://actions.google.com/sounds/v1/ambiences/coffee_shop.ogg'
+    };
+
+    function updateTaskDisplay() {
+        const select = document.getElementById('task-select');
+        taskNameDisplay.innerText = select.value ? "🎯 " + select.value : "";
+    }
+
+    function updateDisplay() {
+        const mins = Math.floor(timeLeft / 60);
+        const secs = timeLeft % 60;
+        display.innerText = `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
+        document.title = `${display.innerText} - Фокус`; 
+    }
+
+    function toggleTimer() {
+        if (isRunning) {
+            clearInterval(timer);
+            startBtn.innerText = 'СТАРТ';
+            startBtn.style.background = 'linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%)';
+        } else {
+            timer = setInterval(() => {
+                if (timeLeft > 0) {
+                    timeLeft--;
+                    updateDisplay();
+                } else {
+                    clearInterval(timer);
+                    new Audio('https://actions.google.com/sounds/v1/alarms/dinner_chime.ogg').play();
+                    alert("Время вышло!");
+                    resetTimer();
+                }
+            }, 1000);
+            startBtn.innerText = 'ПАУЗА';
+            startBtn.style.background = '#ef4444';
+        }
+        isRunning = !isRunning;
+    }
+
+    function resetTimer() {
+        clearInterval(timer);
+        isRunning = false;
+        timeLeft = currentMode === 'work' ? 25 * 60 : 5 * 60;
+        startBtn.innerText = 'СТАРТ';
+        startBtn.style.background = 'linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%)';
+        updateDisplay();
+    }
+
+    function setMode(mode) {
+        currentMode = mode;
+        document.getElementById('mode-work').classList.toggle('active', mode === 'work');
+        document.getElementById('mode-break').classList.toggle('active', mode === 'break');
+        resetTimer();
+    }
+
+    function playAmbient(type, btn) {
+        document.querySelectorAll('.sound-btn').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        bgAudio.pause();
+        bgAudio.src = sounds[type];
+        bgAudio.load();
+        bgAudio.play().catch(e => setTimeout(() => bgAudio.play(), 1000));
+    }
+
+    function stopAmbient() {
+        bgAudio.pause();
+        bgAudio.src = "";
+        document.querySelectorAll('.sound-btn').forEach(b => b.classList.remove('active'));
+    }
+
+    updateDisplay();
+</script>
+{% endblock %}

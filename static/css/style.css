@@ -1,0 +1,167 @@
+body { background-color: #f8f9fa; font-family: 'Inter', sans-serif; }
+.sidebar {
+    height: 100vh;
+    background: #212529;
+    color: white;
+    padding-top: 20px;
+    position: fixed;
+}
+.sidebar .nav-link {
+    color: #adb5bd;
+    margin: 5px 0;
+}
+.sidebar .nav-link:hover, .sidebar .nav-link.active {
+    color: white;
+    background: #343a40;
+    border-radius: 5px;
+}
+.main-content { margin-left: 16.66667%; padding: 40px; }
+.task-card { transition: 0.3s; border: none; box-shadow: 0 2px 10px rgba(0,0,0,0.05); }
+.task-card:hover { transform: translateY(-3px); }
+
+/* Убираем точки у навигации */
+.nav-link {
+    border-radius: 8px;
+    transition: 0.3s;
+}
+
+.nav-link:hover {
+    background-color: #343a40;
+}
+
+/* Красивые карточки */
+.card {
+    border: none;
+    border-radius: 12px;
+}
+
+/* Стили для таблицы */
+.table thead th {
+    border-top: none;
+    background-color: #f8f9fa;
+}
+
+/* Приоритеты */
+.badge {
+    font-size: 0.85rem;
+    padding: 0.5em 0.8em;
+}.task-card {
+    cursor: grab;
+    transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.task-card:active {
+    cursor: grabbing;
+}
+
+.task-card.dragging {
+    opacity: 0.5;
+    transform: scale(0.95);
+}
+
+.kanban-column {
+    transition: background-color 0.3s;
+}
+
+/* Подсветка колонки, над которой тащим карточку */
+.kanban-column:hover {
+    background-color: #e9ecef !important;
+}
+/* Эффект наведения на колонку при перетаскивании */
+.kanban-column.drag-over {
+    background-color: #dee2e6 !important;
+    border: 2px dashed #6c757d !important;
+}
+
+/* Стиль карточки, которую мы тащим */
+.task-card.dragging {
+    opacity: 0.4;
+    transform: rotate(3deg);
+    box-shadow: 0 10px 20px rgba(0,0,0,0.2);
+}
+
+.task-card {
+    cursor: grab;
+    transition: all 0.2s ease;
+}
+
+.task-card:active {
+    cursor: grabbing;
+}
+/* Современные шрифты */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&family=Space+Grotesk:wght@500;700&display=swap');
+
+:root {
+    --bg-color: #f0f2f5;
+    --card-bg: rgba(255, 255, 255, 0.8);
+    --primary-gradient: linear-gradient(135deg, #6366f1 0%, #a855f7 100%);
+    --accent-color: #4f46e5;
+}
+
+body {
+    background-color: var(--bg-color);
+    font-family: 'Inter', sans-serif;
+    color: #1f2937;
+}
+
+h1, h2, h3, .brand-font {
+    font-family: 'Space Grotesk', sans-serif;
+    font-weight: 700;
+}
+
+/* Эффект стекла для карточек */
+.glass-card {
+    background: var(--card-bg);
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    border-radius: 24px;
+    box-shadow: 0 8px 32px rgba(31, 38, 135, 0.07);
+    transition: all 0.3s ease;
+}
+
+.glass-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 12px 40px rgba(31, 38, 135, 0.12);
+}
+
+/* Умный баннер с ИИ */
+.ai-briefing {
+    background: var(--primary-gradient);
+    color: white;
+    border-radius: 30px;
+    padding: 2.5rem;
+    position: relative;
+    overflow: hidden;
+    margin-bottom: 2rem;
+}
+
+.ai-briefing::after {
+    content: '';
+    position: absolute;
+    top: -20px;
+    right: -20px;
+    width: 150px;
+    height: 150px;
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 50%;
+}
+
+/* Кнопки */
+.btn-modern {
+    border-radius: 12px;
+    padding: 10px 24px;
+    font-weight: 600;
+    transition: 0.2s;
+}
+
+/* Кастомный прогресс-бар */
+.progress-custom {
+    height: 12px;
+    border-radius: 10px;
+    background: #e5e7eb;
+}
+
+.progress-bar-custom {
+    background: var(--primary-gradient);
+    border-radius: 10px;
+}

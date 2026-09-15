@@ -1,0 +1,217 @@
+{% extends "base.html" %}
+
+{% block content %}
+<!-- Google Fonts & Libraries -->
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css"/>
+
+<style>
+    :root {
+        --primary: #6366f1;
+        --secondary: #a855f7;
+        --dark-bg: #0f172a;
+        --glass-border: rgba(255, 255, 255, 0.1);
+    }
+
+    body {
+        font-family: 'Plus Jakarta Sans', sans-serif;
+        background-color: var(--dark-bg);
+        color: #f8fafc;
+        min-height: 100vh;
+        margin: 0;
+    }
+
+    /* Анимированные фоновые пятна */
+    .bg-blobs {
+        position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: -1;
+        background: radial-gradient(circle at 50% 50%, #1e1b4b 0%, #0f172a 100%);
+        overflow: hidden;
+    }
+
+    .blob {
+        position: absolute; width: 500px; height: 500px;
+        background: linear-gradient(135deg, var(--primary), var(--secondary));
+        filter: blur(80px); border-radius: 50%; opacity: 0.1;
+        animation: float 20s infinite alternate;
+    }
+
+    @keyframes float {
+        0% { transform: translate(0, 0); }
+        100% { transform: translate(100px, 50px); }
+    }
+
+    .glass-card {
+        background: rgba(30, 41, 59, 0.6);
+        backdrop-filter: blur(20px);
+        border: 1px solid var(--glass-border);
+        border-radius: 28px;
+        padding: 2rem;
+        transition: 0.3s;
+    }
+
+    .brand-glow {
+        color: #c084fc;
+        text-shadow: 0 0 15px rgba(192, 132, 252, 0.5);
+        font-weight: 800;
+        text-transform: uppercase;
+        letter-spacing: 2px;
+    }
+
+    /* Статистические карточки */
+    .stat-box {
+        text-align: center;
+        padding: 1.5rem;
+    }
+    .stat-number {
+        font-size: 2.5rem;
+        font-weight: 800;
+        margin-bottom: 0;
+    }
+
+    /* Прогресс бар */
+    .progress-container {
+        background: rgba(0,0,0,0.3); height: 20px; border-radius: 10px; overflow: hidden;
+    }
+    .progress-fill {
+        height: 100%; background: linear-gradient(90deg, #22c55e, #10b981); width: 0%;
+        transition: width 1.5s cubic-bezier(0.34, 1.56, 0.64, 1);
+        box-shadow: 0 0 20px rgba(34, 197, 94, 0.3);
+    }
+</style>
+
+<div class="bg-blobs">
+    <div class="blob" style="top: -10%; left: -10%;"></div>
+    <div class="blob" style="bottom: -10%; right: -10%;"></div>
+</div>
+
+<div class="container py-5">
+    <div class="text-center mb-5 animate__animated animate__fadeInDown">
+        <h2 class="brand-glow mb-2">Аналитика</h2>
+        <p class="opacity-50">Твои достижения и распределение ресурсов</p>
+    </div>
+
+    <!-- Сводка цифр -->
+    <div class="row g-4 mb-5 animate__animated animate__fadeInUp">
+        <div class="col-md-4">
+            <div class="glass-card stat-box">
+                <h6 class="opacity-50 fw-bold text-uppercase small">В планах</h6>
+                <p class="stat-number text-secondary" id="count-todo">0</p>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="glass-card stat-box" style="border-color: var(--primary);">
+                <h6 class="opacity-50 fw-bold text-uppercase small">В процессе</h6>
+                <p class="stat-number text-primary" id="count-doing">0</p>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="glass-card stat-box">
+                <h6 class="opacity-50 fw-bold text-uppercase small">Завершено</h6>
+                <p class="stat-number text-success" id="count-done">0</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Общий прогресс -->
+    <div class="glass-card mb-5 animate__animated animate__fadeInUp" style="animation-delay: 0.2s;">
+        <div class="d-flex justify-content-between align-items-end mb-3">
+            <h5 class="fw-bold m-0">Общий успех дня</h5>
+            <h3 class="fw-800 m-0 text-success"><span id="score-text">0</span>%</h3>
+        </div>
+        <div class="progress-container">
+            <div id="ai-progress" class="progress-fill"></div>
+        </div>
+    </div>
+
+    <!-- Графики -->
+    <div class="row g-4 animate__animated animate__fadeInUp" style="animation-delay: 0.4s;">
+        <div class="col-lg-6">
+            <div class="glass-card h-100">
+                <h6 class="fw-bold mb-4 opacity-50 text-center text-uppercase">Категории задач</h6>
+                <canvas id="chart1" style="max-height: 300px;"></canvas>
+            </div>
+        </div>
+        <div class="col-lg-6">
+            <div class="glass-card h-100">
+                <h6 class="fw-bold mb-4 opacity-50 text-center text-uppercase">Уровни приоритета</h6>
+                <canvas id="chart2" style="max-height: 300px;"></canvas>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+    // Настройка шрифтов для Chart.js (чтобы были белыми)
+    Chart.defaults.color = 'rgba(255, 255, 255, 0.6)';
+    Chart.defaults.font.family = "'Plus Jakarta Sans', sans-serif";
+
+    async function loadStats() {
+        const response = await fetch('/api/stats');
+        const data = await response.json();
+
+        // 1. Анимируем цифры
+        document.getElementById('count-todo').innerText = data.todo;
+        document.getElementById('count-doing').innerText = data.doing;
+        document.getElementById('count-done').innerText = data.done;
+        document.getElementById('score-text').innerText = data.score;
+        
+        // 2. Анимируем прогресс-бар
+        setTimeout(() => {
+            document.getElementById('ai-progress').style.width = data.score + "%";
+        }, 500);
+
+        // Цветовая палитра для графиков
+        const colors = ['#6366f1', '#a855f7', '#3b82f6', '#10b981', '#f59e0b'];
+
+        // 3. Круговой график категорий
+        new Chart(document.getElementById('chart1'), {
+            type: 'doughnut',
+            data: {
+                labels: data.cat_labels,
+                datasets: [{
+                    data: data.cat_values,
+                    backgroundColor: colors,
+                    borderColor: 'rgba(15, 23, 42, 0.5)',
+                    borderWidth: 2,
+                    hoverOffset: 20
+                }]
+            },
+            options: {
+                plugins: {
+                    legend: { position: 'bottom' }
+                },
+                cutout: '70%'
+            }
+        });
+
+        // 4. Полярный график приоритетов
+        new Chart(document.getElementById('chart2'), {
+            type: 'polarArea',
+            data: {
+                labels: data.prio_labels,
+                datasets: [{
+                    data: data.prio_values,
+                    backgroundColor: ['#ef4444', '#f59e0b', '#10b981'],
+                    borderColor: 'rgba(15, 23, 42, 0.5)',
+                    borderWidth: 2
+                }]
+            },
+            options: {
+                scales: {
+                    r: {
+                        grid: { color: 'rgba(255,255,255,0.05)' },
+                        angleLines: { color: 'rgba(255,255,255,0.05)' },
+                        ticks: { display: false }
+                    }
+                },
+                plugins: {
+                    legend: { position: 'bottom' }
+                }
+            }
+        });
+    }
+
+    loadStats();
+</script>
+{% endblock %}

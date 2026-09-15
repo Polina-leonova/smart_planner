@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Smart Planner</title>
+    
+    <!-- Подключаем шрифты и библиотеки -->
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css"/>
+    
+    <style>
+        :root {
+            --primary: #6366f1;
+            --secondary: #a855f7;
+            --dark-bg: #0f172a;
+            --glass-border: rgba(255, 255, 255, 0.1);
+            --sidebar-width: 260px;
+        }
+
+        body {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            background-color: var(--dark-bg);
+            color: #f8fafc;
+            margin: 0;
+            overflow-x: hidden;
+        }
+
+        /* Глобальный фон с пятнами */
+        .bg-blobs {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: -1;
+            background: radial-gradient(circle at 50% 50%, #1e1b4b 0%, #0f172a 100%);
+            overflow: hidden;
+        }
+        .blob {
+            position: absolute; width: 600px; height: 600px;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            filter: blur(100px); border-radius: 50%; opacity: 0.1;
+            animation: float 25s infinite alternate;
+        }
+        @keyframes float {
+            0% { transform: translate(0, 0); }
+            100% { transform: translate(50px, 100px); }
+        }
+
+        /* БОКОВОЕ МЕНЮ */
+        .sidebar {
+            width: var(--sidebar-width);
+            height: 100vh;
+            position: fixed;
+            top: 0; left: 0;
+            background: rgba(15, 23, 42, 0.6);
+            backdrop-filter: blur(20px);
+            border-right: 1px solid var(--glass-border);
+            z-index: 1000;
+            padding: 2.5rem 1.5rem;
+            display: flex;
+            /* ИСПРАВЛЕНО: правильное название свойства flex-direction */
+            flex-direction: column;
+        }
+
+        .sidebar-brand {
+            font-weight: 800;
+            font-size: 1.4rem;
+            /* ИСПРАВЛЕНО: убрали градиентный текст, чтобы не было ошибок */
+            color: #c084fc;
+            text-shadow: 0 0 15px rgba(192, 132, 252, 0.4);
+            margin-bottom: 3rem;
+            text-align: center;
+            letter-spacing: 1px;
+        }
+
+        .nav-link {
+            color: rgba(255, 255, 255, 0.5) !important;
+            font-weight: 600;
+            padding: 12px 18px !important;
+            border-radius: 14px;
+            margin-bottom: 8px;
+            transition: 0.3s all ease;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .nav-link:hover {
+            color: #fff !important;
+            background: rgba(255, 255, 255, 0.05);
+            transform: translateX(5px);
+        }
+
+        /* Активный пункт меню */
+        .nav-link.active {
+            background: rgba(99, 102, 241, 0.15);
+            color: #fff !important;
+            border: 1px solid rgba(99, 102, 241, 0.2);
+        }
+        
+        .nav-link.active i {
+            color: var(--primary);
+        }
+
+        /* Контентная область */
+        .main-content {
+            margin-left: var(--sidebar-width);
+            padding: 2rem;
+            min-height: 100vh;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="bg-blobs">
+        <div class="blob" style="top: -5%; left: -5%;"></div>
+        <div class="blob" style="bottom: 5%; right: 5%; animation-delay: -5s;"></div>
+    </div>
+
+    <aside class="sidebar shadow-lg">
+        <!-- Заголовок -->
+        <div class="sidebar-brand">
+            <i class="bi bi-cpu-fill me-2"></i>AI PLANNER
+        </div>
+        
+        <!-- Навигация -->
+        <nav class="nav flex-column flex-grow-1">
+            <a class="nav-link {% if request.url.path == '/' %}active{% endif %}" href="/">
+                <i class="bi bi-grid-1x2-fill"></i> Главная
+            </a>
+            <a class="nav-link {% if request.url.path == '/kanban' %}active{% endif %}" href="/kanban">
+                <i class="bi bi-layout-three-columns"></i> Процессы
+            </a>
+            <a class="nav-link {% if request.url.path == '/analytics' %}active{% endif %}" href="/analytics">
+                <i class="bi bi-bar-chart-line-fill"></i> Аналитика
+            </a>
+            <a class="nav-link {% if request.url.path == '/focus' %}active{% endif %}" href="/focus">
+                <i class="bi bi-clock-fill"></i> Фокус-режим
+            </a>
+        </nav>
+
+        <!-- Нижнюю часть удалили, теперь здесь просто пустота или можно добавить кнопку настроек -->
+       <div class="mt-auto">
+            <a href="/logout" class="nav-link text-danger opacity-75" style="font-size: 0.9rem;">
+                <i class="bi bi-box-arrow-right"></i> Выход
+            </a>
+        </div>
+    </aside>
+
+    <main class="main-content">
+        {% block content %}{% endblock %}
+    </main>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
